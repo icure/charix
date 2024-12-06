@@ -1,8 +1,8 @@
 package com.icure.codegen.ir
 
 import com.icure.codegen.ir.declaration.IRTypeParameter
+import com.icure.codegen.ir.utils.KRAKEN_DTO_BASE_PATH
 import com.icure.codegen.models.EncryptableFlavour
-import com.icure.codegen.utils.KRAKEN_DTO_BASE_PATH
 import kotlinx.serialization.Serializable
 
 @Serializable

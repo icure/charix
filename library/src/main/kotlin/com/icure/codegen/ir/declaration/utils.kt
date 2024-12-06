@@ -8,8 +8,6 @@ import com.google.devtools.ksp.symbol.KSFunctionDeclaration
 import com.google.devtools.ksp.symbol.KSPropertyDeclaration
 import com.google.devtools.ksp.symbol.KSReferenceElement
 import com.google.devtools.ksp.symbol.KSType
-import com.icure.codegen.generator.DtoGeneratorsOptions.ENCRYPTABLE_DTO_SIMPLE_NAMES
-import com.icure.codegen.generator.DtoGeneratorsOptions.ENCRYPTABLE_SIMPLE_NAMES
 import com.icure.codegen.ir.IRClass
 import com.icure.codegen.ir.IRDeclaration
 import com.icure.codegen.ir.IREntity
@@ -28,6 +26,8 @@ import com.icure.codegen.ir.entity.toIRTypeReference
 import com.icure.codegen.ir.parameter.toIRParameter
 import com.icure.codegen.ir.parameter.toIRTypeParameter
 import com.icure.codegen.ir.property.toIRProperty
+import com.icure.codegen.ir.utils.ENCRYPTABLE_DTO_SIMPLE_NAMES
+import com.icure.codegen.ir.utils.ENCRYPTABLE_SIMPLE_NAMES
 
 val javaSuperTypes = listOf("Any", "Serializable", "Cloneable", "Comparable", "PrincipalDto")
 
