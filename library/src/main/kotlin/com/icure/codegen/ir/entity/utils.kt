@@ -19,8 +19,8 @@ import com.icure.codegen.ir.declaration.IRTypeParameter
 import com.icure.codegen.ir.declaration.isEncryptableOrSomethingSecure
 import com.icure.codegen.ir.declaration.toIRTypeReference
 import com.icure.codegen.ir.parameter.toIRTypeParameter
-import com.icure.codegen.ir.utils.KRAKEN_DTO_BASE_PATH
-import com.icure.codegen.ir.utils.toSdkDtoPackage
+import com.icure.codegen.utils.KRAKEN_DTO_BASE_PATH
+import com.icure.codegen.utils.toSdkDtoPackage
 
 fun getParentDeclarations(declaration: KSDeclaration): List<String> {
 	val parent = declaration.parentDeclaration?.takeIf { parent ->

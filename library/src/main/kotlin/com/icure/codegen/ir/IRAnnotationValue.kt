@@ -4,7 +4,7 @@ import com.google.devtools.ksp.symbol.KSAnnotation
 import com.google.devtools.ksp.symbol.KSType
 import com.icure.codegen.ir.annotation.toIRAnnotation
 import com.icure.codegen.ir.entity.toIRTypeReference
-import com.icure.codegen.ir.utils.isEncryptableOrSomethingSecure
+import com.icure.codegen.utils.isEncryptableOrSomethingSecure
 import kotlinx.serialization.Serializable
 import kotlin.reflect.KClass
 

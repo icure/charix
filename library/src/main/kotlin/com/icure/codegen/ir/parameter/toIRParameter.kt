@@ -1,7 +1,7 @@
 package com.icure.codegen.ir.parameter
 
 import com.google.devtools.ksp.symbol.KSValueParameter
-import com.icure.codegen.ir.functions.toPascalCase
+import com.icure.codegen.functions.toPascalCase
 import com.icure.codegen.ir.IRCodeBlock
 import com.icure.codegen.ir.IREntityReference
 import com.icure.codegen.ir.IRNull

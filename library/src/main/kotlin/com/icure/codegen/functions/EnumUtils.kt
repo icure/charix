@@ -1,4 +1,4 @@
-package com.icure.codegen.ir.functions
+package com.icure.codegen.functions
 
 @JvmInline
 value class PascalCaseString(override val value: String): Casing {

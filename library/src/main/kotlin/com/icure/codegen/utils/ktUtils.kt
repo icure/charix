@@ -1,4 +1,4 @@
-package com.icure.codegen.ir.utils
+package com.icure.codegen.utils
 
 import com.icure.codegen.ir.IRClassDeclaration
 import com.icure.codegen.ir.IREntityReference

@@ -1,4 +1,4 @@
-package com.icure.codegen.ir.utils
+package com.icure.codegen.utils
 
 // region Kraken Constants
 const val KRAKEN_DTO_BASE_PATH = "org.taktik.icure.services.external.rest.v2.dto"

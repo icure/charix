@@ -26,8 +26,8 @@ import com.icure.codegen.ir.entity.toIRTypeReference
 import com.icure.codegen.ir.parameter.toIRParameter
 import com.icure.codegen.ir.parameter.toIRTypeParameter
 import com.icure.codegen.ir.property.toIRProperty
-import com.icure.codegen.ir.utils.ENCRYPTABLE_DTO_SIMPLE_NAMES
-import com.icure.codegen.ir.utils.ENCRYPTABLE_SIMPLE_NAMES
+import com.icure.codegen.utils.ENCRYPTABLE_DTO_SIMPLE_NAMES
+import com.icure.codegen.utils.ENCRYPTABLE_SIMPLE_NAMES
 
 val javaSuperTypes = listOf("Any", "Serializable", "Cloneable", "Comparable", "PrincipalDto")
 

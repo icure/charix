@@ -2,7 +2,7 @@ package com.icure.codegen.ir
 
 import com.icure.codegen.ir.annotation.IRAnnotated
 import com.icure.codegen.ir.declaration.IRTypeParameter
-import com.icure.codegen.ir.utils.isEncryptableOrSomethingSecure
+import com.icure.codegen.utils.isEncryptableOrSomethingSecure
 import kotlinx.serialization.Serializable
 
 @Serializable
