@@ -41,14 +41,14 @@ data class IRParameter(
     }
 }
 
-fun KSValueParameter.extractSourceAndNameOrThrow(): Pair<IRParameter.ParameterSource, String?>? =
+fun KSValueParameter.extractSourceAndNameOrThrow(): Pair<ParameterSource, String?>? =
     annotations.firstNotNullOfOrNull { ann ->
         when (ann.shortName.asString()) {
-            "PathVariable" -> IRParameter.ParameterSource.PATH to null
-            "RequestParam" -> IRParameter.ParameterSource.REQUEST to ann.urlNameOrNull()?.takeIf { it.isNotEmpty() }
-            "RequestHeader" -> IRParameter.ParameterSource.HEADER to ann.urlNameOrNull()?.takeIf { it.isNotEmpty() }
-            "RequestBody" -> IRParameter.ParameterSource.BODY to null
-            "RequestPart" -> IRParameter.ParameterSource.PART to ann.urlNameOrNull()?.takeIf { it.isNotEmpty() }
+            "PathVariable" -> ParameterSource.PATH to null
+            "RequestParam" -> ParameterSource.REQUEST to ann.urlNameOrNull()?.takeIf { it.isNotEmpty() }
+            "RequestHeader" -> ParameterSource.HEADER to ann.urlNameOrNull()?.takeIf { it.isNotEmpty() }
+            "RequestBody" -> ParameterSource.BODY to null
+            "RequestPart" -> ParameterSource.PART to ann.urlNameOrNull()?.takeIf { it.isNotEmpty() }
             else -> null
         }
     }

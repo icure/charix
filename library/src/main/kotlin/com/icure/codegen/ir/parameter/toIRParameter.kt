@@ -8,6 +8,7 @@ import com.icure.codegen.ir.IRNull
 import com.icure.codegen.ir.IRParameter
 import com.icure.codegen.ir.IRText
 import com.icure.codegen.ir.annotation.extractDefaultValueFromAnnotation
+import com.icure.codegen.ir.annotation.toIRAnnotation
 import com.icure.codegen.ir.entity.toIRTypeReference
 import com.icure.codegen.ir.extractSourceAndNameOrThrow
 
@@ -21,7 +22,15 @@ fun KSValueParameter.toIRParameter(): IRParameter {
 		} else {
 			extractDefaultValueFromAnnotation(type, annotations.toList())
 		}
-		return IRParameter(name, type, source, sourceAndUrlName?.second, defaultValue, null)
+		return IRParameter(
+			name = name,
+			type = type,
+			source = source,
+			urlName = sourceAndUrlName?.second,
+			defaultValue = defaultValue,
+			serialName = null,
+			annotations = annotations.map { it.toIRAnnotation() }.toList()
+		)
 	}
 
 
