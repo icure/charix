@@ -73,6 +73,9 @@ fun KSAnnotation.toIRAnnotation(): IRAnnotation {
 	)
 }
 
+fun Sequence<KSAnnotation>.toIRAnnotations(): List<IRAnnotation> =
+	map { it.toIRAnnotation() }.toList()
+
 /**
  * Finds the annotation the contains the request path (e.g. RestController, PostMapping) in the iterable and returns
  * the request path.

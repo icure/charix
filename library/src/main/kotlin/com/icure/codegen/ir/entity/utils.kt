@@ -15,6 +15,8 @@ import com.icure.codegen.ir.IRFunctionTypeReference
 import com.icure.codegen.ir.IRGenericReference
 import com.icure.codegen.ir.IRPlainEntityReference
 import com.icure.codegen.ir.IRStar
+import com.icure.codegen.ir.annotation.IRAnnotated
+import com.icure.codegen.ir.annotation.toIRAnnotations
 import com.icure.codegen.ir.declaration.IRTypeParameter
 import com.icure.codegen.ir.declaration.isEncryptableOrSomethingSecure
 import com.icure.codegen.ir.declaration.toIRTypeReference
@@ -31,6 +33,7 @@ fun getParentDeclarations(declaration: KSDeclaration): List<String> {
 }
 
 fun KSTypeReference?.toIRTypeReference(): IREntityReference = this?.resolve()?.let { type ->
+	type.annotations
 	val typeArguments = type.arguments.map {
 		if(it.variance == Variance.STAR) {
 			IRTypeParameter(name = "*", bounds = emptyList(), value = IRStar)
@@ -45,7 +48,8 @@ fun KSTypeReference?.toIRTypeReference(): IREntityReference = this?.resolve()?.l
 			packageName = type.declaration.packageName.asString(),
 			simpleName = type.declaration.simpleName.asString(),
 			isNullable = type.isMarkedNullable,
-			parentDeclarations = getParentDeclarations(type.declaration)
+			parentDeclarations = getParentDeclarations(type.declaration),
+			annotations = annotations.toIRAnnotations(),
 		)
 		type.isFunctionType || type.isSuspendFunctionType -> IRFunctionTypeReference(
 			packageName = type.declaration.packageName.asString(),
@@ -53,7 +57,8 @@ fun KSTypeReference?.toIRTypeReference(): IREntityReference = this?.resolve()?.l
 			isNullable = type.isMarkedNullable,
 			isSuspend = type.isSuspendFunctionType,
 			parameters = type.arguments.dropLast(1).map { it.type.toIRTypeReference() },
-			returnType = type.arguments.last().type.toIRTypeReference()
+			returnType = type.arguments.last().type.toIRTypeReference(),
+			annotations = annotations.toIRAnnotations(),
 		)
 		isEncryptable && type.declaration.simpleName.asString().startsWith("Decrypted") -> IRDecryptedEntityReference(
 			packageName = type.declaration.packageName.asString(),
@@ -61,6 +66,7 @@ fun KSTypeReference?.toIRTypeReference(): IREntityReference = this?.resolve()?.l
 			parentDeclarations = getParentDeclarations(type.declaration),
 			isNullable = type.isMarkedNullable,
 			superTypes = (type as? KSClassDeclaration)?.superTypes?.map { it.toIRTypeReference() }?.toList() ?: emptyList(),
+			annotations = annotations.toIRAnnotations(),
 		)
 		isEncryptable && type.declaration.simpleName.asString().startsWith("Encrypted") -> IREncryptedEntityReference(
 			packageName = type.declaration.packageName.asString(),
@@ -68,6 +74,7 @@ fun KSTypeReference?.toIRTypeReference(): IREntityReference = this?.resolve()?.l
 			parentDeclarations = getParentDeclarations(type.declaration),
 			isNullable = type.isMarkedNullable,
 			superTypes = (type as? KSClassDeclaration)?.superTypes?.map { it.toIRTypeReference() }?.toList() ?: emptyList(),
+			annotations = annotations.toIRAnnotations(),
 		)
 		else -> IRPlainEntityReference(
 			packageName = type.declaration.packageName.asString(),
@@ -75,7 +82,8 @@ fun KSTypeReference?.toIRTypeReference(): IREntityReference = this?.resolve()?.l
 			parentDeclarations = getParentDeclarations(type.declaration),
 			isNullable = type.isMarkedNullable,
 			superTypes = (type as? KSClassDeclaration)?.superTypes?.map { it.toIRTypeReference() }?.toList() ?: emptyList(),
-			isEncryptable = isEncryptable
+			isEncryptable = isEncryptable,
+			annotations = annotations.toIRAnnotations(),
 		).parametrizedBy(typeArguments)
 	}
 } ?: IRPlainEntityReference(
@@ -84,7 +92,8 @@ fun KSTypeReference?.toIRTypeReference(): IREntityReference = this?.resolve()?.l
 	parentDeclarations = emptyList(),
 	isNullable = false,
 	superTypes = emptyList(),
-	isEncryptable = false
+	isEncryptable = false,
+	annotations = emptyList(),
 )
 
 fun <T : IREntity> T.mapToModelType(): IREntityReference = when {
@@ -94,7 +103,8 @@ fun <T : IREntity> T.mapToModelType(): IREntityReference = when {
 		parentDeclarations = parentDeclarations,
 		isNullable = false,
 		isEncryptable = false,
-		superTypes = emptyList()
+		superTypes = emptyList(),
+		annotations = (this as? IRAnnotated)?.annotations.orEmpty(),
 	)
 	else -> IRPlainEntityReference(
 		packageName = packageName,
@@ -102,7 +112,8 @@ fun <T : IREntity> T.mapToModelType(): IREntityReference = when {
 		parentDeclarations = parentDeclarations,
 		isNullable = false,
 		isEncryptable = false,
-		superTypes = emptyList()
+		superTypes = emptyList(),
+		annotations = (this as? IRAnnotated)?.annotations.orEmpty(),
 	)
 }
 
@@ -112,7 +123,8 @@ fun KSTypeAlias.toIRTypeReference() = IRPlainEntityReference(
 	parentDeclarations = getParentDeclarations(this),
 	isNullable = false,
 	isEncryptable = false,
-	superTypes = emptyList()
+	superTypes = emptyList(),
+	annotations = emptyList()
 ).mapToModelType()
 
 fun KSTypeParameter.toIRTypeReference() = IRPlainEntityReference(
@@ -121,7 +133,8 @@ fun KSTypeParameter.toIRTypeReference() = IRPlainEntityReference(
 	parentDeclarations = getParentDeclarations(this),
 	isNullable = false,
 	isEncryptable = false,
-	superTypes = emptyList()
+	superTypes = emptyList(),
+	annotations = annotations.toIRAnnotations()
 ).mapToModelType()
 
 fun KSType.toIRTypeReference(): IREntityReference = when(val decl = this.declaration) {
@@ -134,6 +147,7 @@ fun KSType.toIRTypeReference(): IREntityReference = when(val decl = this.declara
 		parentDeclarations = getParentDeclarations(decl),
 		isNullable = false,
 		superTypes = emptyList(),
-		isEncryptable = this.isEncryptableOrSomethingSecure()
+		isEncryptable = this.isEncryptableOrSomethingSecure(),
+		annotations = annotations.toIRAnnotations()
 	)
 }

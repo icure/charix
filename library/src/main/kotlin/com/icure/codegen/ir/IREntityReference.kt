@@ -1,12 +1,13 @@
 package com.icure.codegen.ir
 
+import com.icure.codegen.ir.annotation.IRAnnotated
 import com.icure.codegen.ir.declaration.IRTypeParameter
 import com.icure.codegen.utils.KRAKEN_DTO_BASE_PATH
 import com.icure.codegen.models.EncryptableFlavour
 import kotlinx.serialization.Serializable
 
 @Serializable
-sealed interface IREntityReference: IREntity, IRAnnotationValue {
+sealed interface IREntityReference: IREntity, IRAnnotationValue, IRAnnotated {
 	val isNullable: Boolean
 	val isEncryptable: Boolean
 	val typeParameters: List<IRTypeParameter>
@@ -25,6 +26,7 @@ object IRStar : IREntityReference {
 	override val simpleName: String = "*"
 	override val typeParameters: List<IRTypeParameter> = emptyList()
 	override val superTypes: List<IREntityReference> = emptyList()
+	override val annotations: List<IRAnnotation> = emptyList()
 	override val isEncryptable = false
 
 	override fun toFlavour(flavour: EncryptableFlavour?) = this
@@ -37,7 +39,8 @@ data class IRGenericReference(
 	override val packageName: String?,
 	override val isNullable: Boolean,
 	override val simpleName: String,
-	override val parentDeclarations: List<String>
+	override val parentDeclarations: List<String>,
+	override val annotations: List<IRAnnotation>,
 ) : IREntityReference {
 
 	override val typeParameters: List<IRTypeParameter> = emptyList()
@@ -58,6 +61,7 @@ data class IRFunctionTypeReference(
 	val isSuspend: Boolean,
 	val parameters: List<IREntityReference>,
 	val returnType: IREntityReference,
+	override val annotations: List<IRAnnotation>,
 ) : IREntityReference {
 
 	override val isEncryptable: Boolean = false
@@ -93,7 +97,8 @@ data class IRPlainEntityReference(
 	override val isNullable: Boolean,
 	override val isEncryptable: Boolean,
 	override val typeParameters: List<IRTypeParameter> = emptyList(),
-	override val superTypes: List<IREntityReference>
+	override val superTypes: List<IREntityReference>,
+	override val annotations: List<IRAnnotation>,
 ) : IRClassReference {
 
 	override fun toFlavour(flavour: EncryptableFlavour?) = when {
@@ -103,6 +108,7 @@ data class IRPlainEntityReference(
 			parentDeclarations = parentDeclarations,
 			isNullable = isNullable,
 			superTypes = superTypes.map { it.toFlavour(flavour) },
+			annotations = annotations,
 		)
 		isEncryptable && flavour == EncryptableFlavour.ENCRYPTED -> IREncryptedEntityReference(
 			packageName = packageName,
@@ -110,6 +116,7 @@ data class IRPlainEntityReference(
 			parentDeclarations = parentDeclarations,
 			isNullable = isNullable,
 			superTypes = superTypes.map { it.toFlavour(flavour) },
+			annotations = annotations,
 		)
 		else -> if (simpleName.startsWith("Decrypted") || simpleName.startsWith("Encrypted")) {
 			simpleName.drop("xxcrypted".length).takeIf { noncryptedName ->
@@ -121,7 +128,8 @@ data class IRPlainEntityReference(
 					parentDeclarations = parentDeclarations,
 					isNullable = isNullable,
 					isEncryptable = isEncryptable,
-					superTypes = superTypes.map { it.toFlavour(null) }
+					superTypes = superTypes.map { it.toFlavour(null) },
+					annotations = annotations,
 				)
 			} ?: this
 		} else this
@@ -138,7 +146,8 @@ data class IRDecryptedEntityReference(
 	override val parentDeclarations: List<String>,
 	override val isNullable: Boolean,
 	override val typeParameters: List<IRTypeParameter> = emptyList(),
-	override val superTypes: List<IREntityReference>
+	override val superTypes: List<IREntityReference>,
+	override val annotations: List<IRAnnotation>,
 ) : IREntityReference {
 
 	override val isEncryptable: Boolean = true
@@ -153,7 +162,8 @@ data class IRDecryptedEntityReference(
 			),
 			parentDeclarations = parentDeclarations,
 			isNullable = isNullable,
-			superTypes = superTypes.map { it.toFlavour(flavour) }
+			superTypes = superTypes.map { it.toFlavour(flavour) },
+			annotations = annotations,
 		)
 		null -> IRPlainEntityReference(
             packageName = packageName,
@@ -161,7 +171,8 @@ data class IRDecryptedEntityReference(
 			parentDeclarations = parentDeclarations,
             isNullable = isNullable,
 			isEncryptable = true,
-			superTypes = superTypes.map { it.toFlavour(null) }
+			superTypes = superTypes.map { it.toFlavour(null) },
+			annotations = annotations,
 		)
 	}.copyWith(typeParameters = typeParameters.map { it.toFlavour(flavour) })
 
@@ -177,6 +188,7 @@ data class IREncryptedEntityReference(
 	override val isNullable: Boolean,
 	override val typeParameters: List<IRTypeParameter> = emptyList(),
 	override val superTypes: List<IREntityReference>,
+	override val annotations: List<IRAnnotation>,
 ) : IREntityReference {
 
 	override val isEncryptable: Boolean = true
@@ -190,7 +202,8 @@ data class IREncryptedEntityReference(
 			),
 			parentDeclarations = parentDeclarations,
 			isNullable = isNullable,
-			superTypes = superTypes.map { it.toFlavour(flavour) }
+			superTypes = superTypes.map { it.toFlavour(flavour) },
+			annotations = annotations,
 		)
 		EncryptableFlavour.ENCRYPTED -> this
 		null -> IRPlainEntityReference(
@@ -199,7 +212,8 @@ data class IREncryptedEntityReference(
 			parentDeclarations = parentDeclarations,
             isNullable = isNullable,
 			isEncryptable = true,
-			superTypes = superTypes.map { it.toFlavour(null) }
+			superTypes = superTypes.map { it.toFlavour(null) },
+			annotations = annotations,
 		)
 	}.copyWith(typeParameters = typeParameters.map { it.toFlavour(flavour) })
 

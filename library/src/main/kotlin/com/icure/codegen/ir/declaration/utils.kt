@@ -21,6 +21,7 @@ import com.icure.codegen.ir.IRObject
 import com.icure.codegen.ir.IRPlainEntityReference
 import com.icure.codegen.ir.IRProperty
 import com.icure.codegen.ir.annotation.toIRAnnotation
+import com.icure.codegen.ir.annotation.toIRAnnotations
 import com.icure.codegen.ir.entity.getParentDeclarations
 import com.icure.codegen.ir.entity.toIRTypeReference
 import com.icure.codegen.ir.parameter.toIRParameter
@@ -59,7 +60,8 @@ fun KSFunctionDeclaration.toIRFunction(): IRFunction = IRFunction(
 			parentDeclarations = emptyList(),
 			isNullable = false,
 			superTypes = emptyList(),
-			isEncryptable = false
+			isEncryptable = false,
+			annotations = emptyList()
 		),
 		modifiers = modifiers.map { IRModifier.fromModifier(it) }.toSet(),
 		docString = docString
@@ -151,7 +153,8 @@ fun KSClassDeclaration.toIRTypeReference(isNullable: Boolean, element: KSReferen
 	},
 	isNullable = isNullable,
 	superTypes = superTypes.map { it.toIRTypeReference() }.toList(),
-	isEncryptable = isEncryptableOrSomethingSecure()
+	isEncryptable = isEncryptableOrSomethingSecure(),
+	annotations = annotations.toIRAnnotations()
 )
 
 fun KSClassDeclaration.propertiesToIRProperties(): List<IRProperty> {

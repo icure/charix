@@ -23,7 +23,8 @@ sealed interface IRAnnotationValue : IRNode {
 					parentDeclarations = emptyList(),
 					isNullable = false,
 					superTypes = emptyList(),
-					isEncryptable = value.isEncryptableOrSomethingSecure()
+					isEncryptable = value.isEncryptableOrSomethingSecure(),
+					annotations = emptyList()
 				)
 				is KSType -> value.toIRTypeReference()
 
