@@ -12,11 +12,8 @@ group = "com.icure"
 version = gitVersion ?: "0.0.1-SNAPSHOT"
 
 kotlin {
-    jvm {
-        compilations.all {
-            kotlinOptions.jvmTarget = "1.8"
-        }
-    }
+    jvmToolchain(21)
+    jvm()
 
     sourceSets {
         val jvmMain by getting {

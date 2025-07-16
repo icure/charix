@@ -1,8 +1,10 @@
 package com.icure.codegen.ir
 
 import com.google.devtools.ksp.symbol.KSAnnotation
+import com.google.devtools.ksp.symbol.KSClassDeclaration
 import com.google.devtools.ksp.symbol.KSType
 import com.icure.codegen.ir.annotation.toIRAnnotation
+import com.icure.codegen.ir.declaration.toIRTypeReference
 import com.icure.codegen.ir.entity.toIRTypeReference
 import com.icure.codegen.utils.isEncryptableOrSomethingSecure
 import kotlinx.serialization.Serializable
@@ -27,7 +29,7 @@ sealed interface IRAnnotationValue : IRNode {
 					annotations = emptyList()
 				)
 				is KSType -> value.toIRTypeReference()
-
+				is KSClassDeclaration -> value.toIRTypeReference(false, null)
 				null, is String, is Long, is Int, is Double, is Boolean -> ofPrimitive(value)
 
 				else -> throw IllegalStateException("Unexpected annotation value: ${value::class.qualifiedName}")

@@ -1,12 +1,12 @@
 [versions]
 agp = "8.5.2"
-kotlin = "2.0.21"
-ksp = "2.0.21-1.0.28"
-kotix-serialization = "1.7.3"
+kotlin = "2.2.0"
+ksp = "2.2.0-2.0.2"
+kotlinx-serialization = "1.8.1"
 
 [libraries]
 ksp-symbol-processing-api = { module = "com.google.devtools.ksp:symbol-processing-api", version.ref = "ksp" }
-kotlin-serialization = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotix-serialization" }
+kotlin-serialization = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinx-serialization" }
 kotlin-reflection = { module = "org.jetbrains.kotlin:kotlin-reflect", version.ref = "kotlin" }
 
 [plugins]
