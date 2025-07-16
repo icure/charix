@@ -4,6 +4,7 @@ plugins {
     alias(libs.plugins.kotlinMultiplatform)
     alias(libs.plugins.vanniktech.mavenPublish)
     alias(libs.plugins.kotlin.plugin.serialization)
+    alias(libs.plugins.gitVersion) apply(true)
 }
 
 val gitVersion: String? by project
