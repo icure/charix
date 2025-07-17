@@ -11,9 +11,8 @@ githubUsername=USERNAME
 githubPassword=TOKEN
 ```
 
-::: warning
-The `githubPassword` should be a GitHub token with the `write:packages` scope.
-:::
+> [!WARNING]
+> The `githubPassword` should be a GitHub token with the `write:packages` scope.
 
 ### 2. Create a new tag
 
@@ -24,7 +23,7 @@ git tag -a VERSION -m "Release VERSION"
 ### 3. Run the following command
 
 ```zsh
-./gradlew library:publishAllPublicationsToGithubPackagesRepository -PgitVersion=VERSION
+./gradlew library:publishAllPublicationsToGithubPackagesRepository -PgitTag=VERSION
 ```
 
 ### 4. Push the tag
