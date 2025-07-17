@@ -143,7 +143,7 @@ fun KSClassDeclaration.toIREnumEntry(): IREnumEntry = IREnumEntry(
 )
 
 fun KSClassDeclaration.toIRTypeReference(isNullable: Boolean, element: KSReferenceElement?): IREntityReference = IRPlainEntityReference(
-	packageName = packageName.asString(),
+	packageName = runCatching { packageName.asString() }.getOrDefault("kotlin"), //Because when the package is kotlin, KSP trips on an NPE
 	simpleName = simpleName.asString(),
 	parentDeclarations = getParentDeclarations(this),
 	typeParameters = element?.typeArguments.let { arguments ->
