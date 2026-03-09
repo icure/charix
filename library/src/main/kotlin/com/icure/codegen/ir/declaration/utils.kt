@@ -2,12 +2,14 @@ package com.icure.codegen.ir.declaration
 
 import com.google.devtools.ksp.getDeclaredProperties
 import com.google.devtools.ksp.symbol.ClassKind
+import com.google.devtools.ksp.symbol.FileLocation
 import com.google.devtools.ksp.symbol.KSClassDeclaration
 import com.google.devtools.ksp.symbol.KSDeclaration
 import com.google.devtools.ksp.symbol.KSFunctionDeclaration
 import com.google.devtools.ksp.symbol.KSPropertyDeclaration
 import com.google.devtools.ksp.symbol.KSReferenceElement
 import com.google.devtools.ksp.symbol.KSType
+import java.io.File
 import com.icure.codegen.ir.IRClass
 import com.icure.codegen.ir.IRDeclaration
 import com.icure.codegen.ir.IREntity
@@ -29,6 +31,62 @@ import com.icure.codegen.ir.parameter.toIRTypeParameter
 import com.icure.codegen.ir.property.toIRProperty
 import com.icure.codegen.utils.ENCRYPTABLE_DTO_SIMPLE_NAMES
 import com.icure.codegen.utils.ENCRYPTABLE_SIMPLE_NAMES
+
+/**
+ * Extracts the KDoc string for a declaration, falling back to parsing the source file
+ * when KSP's [KSDeclaration.docString] returns null (KSP2 on K2 compiler does not support docString).
+ */
+fun KSDeclaration.extractDocString(): String? {
+	docString?.let { return it }
+
+	val fileLocation = location as? FileLocation ?: return null
+	val lines = try {
+		File(fileLocation.filePath).readLines()
+	} catch (_: Exception) {
+		return null
+	}
+	val declarationLine = fileLocation.lineNumber - 1
+
+	if (declarationLine !in lines.indices) return null
+
+	// Scan backwards from the declaration to find the end of a KDoc block (*/).
+	// Between a KDoc and its declaration, only annotations, modifiers, and blank lines can appear.
+	var endLine = -1
+	var parenDepth = 0
+	for (i in (declarationLine - 1) downTo maxOf(0, declarationLine - 200)) {
+		val line = lines[i]
+		// Track parentheses in reverse to skip multi-line annotation arguments
+		for (ch in line.reversed()) {
+			when (ch) {
+				')' -> parenDepth++
+				'(' -> parenDepth--
+			}
+		}
+		if (parenDepth > 0) continue
+
+		val trimmed = line.trim()
+		when {
+			trimmed.isEmpty() -> continue
+			trimmed.endsWith("*/") -> { endLine = i; break }
+			trimmed.startsWith("@") -> continue
+			else -> return null
+		}
+	}
+	if (endLine < 0) return null
+
+	// Scan backwards to find the opening /**, rejecting regular block comments
+	for (i in endLine downTo 0) {
+		val trimmed = lines[i].trim()
+		if (trimmed.startsWith("/**")) {
+			return lines.subList(i, endLine + 1)
+				.joinToString("\n") { it.trim().removePrefix("/**").removePrefix("*").removeSuffix("*/").trimStart() }
+				.trim()
+				.ifEmpty { null }
+		}
+		if (trimmed.startsWith("/*")) return null
+	}
+	return null
+}
 
 val javaSuperTypes = listOf("Any", "Serializable", "Cloneable", "Comparable", "PrincipalDto")
 
@@ -64,7 +122,7 @@ fun KSFunctionDeclaration.toIRFunction(): IRFunction = IRFunction(
 			annotations = emptyList()
 		),
 		modifiers = modifiers.map { IRModifier.fromModifier(it) }.toSet(),
-		docString = docString
+		docString = extractDocString()
 	)
 
 
@@ -83,7 +141,7 @@ fun KSClassDeclaration.toIRClass(): IRClass = IRClass(
 		} else null
 	}.toList(),
 	typeParameters = typeParameters.map { it.toIRTypeParameter() },
-	docString = docString
+	docString = extractDocString()
 )
 
 fun KSClassDeclaration.toIRInterface(): IRInterface = IRInterface(
@@ -101,7 +159,7 @@ fun KSClassDeclaration.toIRInterface(): IRInterface = IRInterface(
 		} else null
 	}.toList(),
 	typeParameters = typeParameters.map { it.toIRTypeParameter() },
-	docString = docString
+	docString = extractDocString()
 )
 
 fun KSClassDeclaration.toIRObject(): IRObject = IRObject(
@@ -119,7 +177,7 @@ fun KSClassDeclaration.toIRObject(): IRObject = IRObject(
 		} else null
 	}.toList(),
 	typeParameters = typeParameters.map { it.toIRTypeParameter() },
-	docString = docString
+	docString = extractDocString()
 )
 
 fun KSClassDeclaration.toIREnum(): IREnum = IREnum(
@@ -130,7 +188,7 @@ fun KSClassDeclaration.toIREnum(): IREnum = IREnum(
 	modifiers = modifiers.map { IRModifier.fromModifier(it) }.toSet(),
 	properties = primaryConstructor?.parameters?.map { it.toIRProperty() } ?: emptyList(),
 	declarations = declarations.map { it.toIRDeclaration() }.toList(),
-	docString = docString
+	docString = extractDocString()
 )
 
 fun KSClassDeclaration.toIREnumEntry(): IREnumEntry = IREnumEntry(
@@ -139,7 +197,7 @@ fun KSClassDeclaration.toIREnumEntry(): IREnumEntry = IREnumEntry(
 	parentDeclarations = getParentDeclarations(this),
 	annotations = annotations.map { it.toIRAnnotation() }.toList(),
 	properties = emptyList(),
-	docString = docString
+	docString = extractDocString()
 )
 
 fun KSClassDeclaration.toIRTypeReference(isNullable: Boolean, element: KSReferenceElement?): IREntityReference = IRPlainEntityReference(

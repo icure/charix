@@ -3,6 +3,7 @@ package com.icure.codegen.ir.property
 import com.google.devtools.ksp.symbol.KSDeclaration
 import com.google.devtools.ksp.symbol.KSPropertyDeclaration
 import com.google.devtools.ksp.symbol.KSValueParameter
+import com.icure.codegen.ir.declaration.extractDocString
 import com.icure.codegen.ir.IRCodeBlock
 import com.icure.codegen.ir.IRModifier
 import com.icure.codegen.ir.IRProperty
@@ -47,7 +48,7 @@ fun KSPropertyDeclaration.toIRProperty(withDefaultValue: Boolean): IRProperty {
 		setter = null,
 		defaultValue = defaultValue,
 		constructor = false,
-		docString = docString
+		docString = extractDocString()
 	)
 }
 
