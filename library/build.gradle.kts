@@ -53,6 +53,10 @@ publishing {
 }
 
 mavenPublishing {
+    configure(com.vanniktech.maven.publish.KotlinMultiplatform(
+        javadocJar = com.vanniktech.maven.publish.JavadocJar.Empty(),
+        sourcesJar = true,
+    ))
     coordinates(group.toString(), "charix", version.toString())
 
     pom {
