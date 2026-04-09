@@ -41,6 +41,7 @@ mavenPublishing {
     ))
     publishToMavenCentral(SonatypeHost.CENTRAL_PORTAL, automaticRelease = true)
     coordinates(group.toString(), "charix", version.toString())
+    signAllPublications()
 
     pom {
         name = "Charix"
