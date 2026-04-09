@@ -1,4 +1,4 @@
-import java.util.Properties
+import com.vanniktech.maven.publish.SonatypeHost
 
 plugins {
     alias(libs.plugins.kotlinMultiplatform)
@@ -28,27 +28,9 @@ kotlin {
     }
 }
 
-val localPropertiesFile = File(rootDir, "local.properties")
-val localProperties = Properties()
-
-if (localPropertiesFile.exists()) {
-    localPropertiesFile.inputStream().use { localProperties.load(it) }
-}
-
-val githubUsername = localProperties["githubUsername"] as String
-val githubPassword = localProperties["githubPassword"] as String
-
 publishing {
     repositories {
         mavenLocal()
-        maven {
-            name = "GithubPackages"
-            url = uri("https://maven.pkg.github.com/icure/charix")
-            credentials {
-                username = githubUsername
-                password = githubPassword
-            }
-        }
     }
 }
 
@@ -57,6 +39,7 @@ mavenPublishing {
         javadocJar = com.vanniktech.maven.publish.JavadocJar.Empty(),
         sourcesJar = true,
     ))
+    publishToMavenCentral(SonatypeHost.CENTRAL_PORTAL, automaticRelease = true)
     coordinates(group.toString(), "charix", version.toString())
 
     pom {
