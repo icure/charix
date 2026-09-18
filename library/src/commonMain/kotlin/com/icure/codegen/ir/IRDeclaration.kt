@@ -27,7 +27,7 @@ val IRClassDeclaration.isFlavoured get() = (
 }
 
 val IRClassDeclaration.supertypesIgnoringAny get() = superTypes.filter { it.canonicalName != "kotlin.Any" }
-val IRClassDeclaration.constructorProperties get() = properties.filter { it.constructor }
+val IRClassDeclaration.constructorProperties get() = properties.filter { it.isConstructor }
 
 val IRClassDeclaration.jsonDiscriminatorName get() = annotations
 	.find { it.simpleName == "JsonDiscriminator" }?.arguments

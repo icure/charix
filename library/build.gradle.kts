@@ -14,13 +14,21 @@ version = gitTag ?: "0.0.1-SNAPSHOT"
 kotlin {
     jvmToolchain(21)
     jvm()
+    js {
+        nodejs()
+    }
 
     sourceSets {
+        val commonMain by getting {
+            dependencies {
+                implementation(libs.kotlin.serialization)
+                implementation(libs.kotlin.reflection)
+            }
+        }
+
         val jvmMain by getting {
             dependencies {
                 implementation(libs.ksp.symbol.processing.api)
-                implementation(libs.kotlin.serialization)
-                implementation(libs.kotlin.reflection)
             }
             kotlin.srcDir("src/main/kotlin")
             resources.srcDir("src/main/resources")

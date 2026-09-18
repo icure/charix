@@ -11,6 +11,7 @@ import com.icure.codegen.ir.annotation.defaultDefaultValueForType
 import com.icure.codegen.ir.annotation.extractDefaultValueFromAnnotation
 import com.icure.codegen.ir.annotation.toIRAnnotation
 import com.icure.codegen.ir.entity.toIRTypeReference
+import com.icure.codegen.ir.fromModifier
 
 fun KSValueParameter.toIRProperty(): IRProperty {
 	val name = requireNotNull(name?.asString()) { "Parameter name cannot be null" }
@@ -25,7 +26,7 @@ fun KSValueParameter.toIRProperty(): IRProperty {
 		getter = null,
 		setter = null,
 		defaultValue = if (hasDefault) extractDefaultValueFromAnnotation(type, annotations.toList()) ?: defaultDefaultValueForType(type) else null,
-		constructor = true,
+		isConstructor = true,
 		docString = null
 	)
 }
@@ -47,7 +48,7 @@ fun KSPropertyDeclaration.toIRProperty(withDefaultValue: Boolean): IRProperty {
 		getter = null,
 		setter = null,
 		defaultValue = defaultValue,
-		constructor = false,
+		isConstructor = false,
 		docString = extractDocString()
 	)
 }
