@@ -1,6 +1,5 @@
 package com.icure.codegen.ir
 
-import com.google.devtools.ksp.symbol.Modifier
 import kotlinx.serialization.Serializable
 
 @Serializable
@@ -46,6 +45,5 @@ enum class IRModifier : IRNode {
 	VARARG;
 
 	companion object {
-		fun fromModifier(modifier: Modifier): IRModifier = IRModifier.valueOf(modifier.name)
 	}
 }

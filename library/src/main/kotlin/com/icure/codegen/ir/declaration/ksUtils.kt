@@ -12,7 +12,6 @@ import com.google.devtools.ksp.symbol.KSType
 import java.io.File
 import com.icure.codegen.ir.IRClass
 import com.icure.codegen.ir.IRDeclaration
-import com.icure.codegen.ir.IREntity
 import com.icure.codegen.ir.IREntityReference
 import com.icure.codegen.ir.IREnum
 import com.icure.codegen.ir.IREnumEntry
@@ -26,6 +25,7 @@ import com.icure.codegen.ir.annotation.toIRAnnotation
 import com.icure.codegen.ir.annotation.toIRAnnotations
 import com.icure.codegen.ir.entity.getParentDeclarations
 import com.icure.codegen.ir.entity.toIRTypeReference
+import com.icure.codegen.ir.fromModifier
 import com.icure.codegen.ir.parameter.toIRParameter
 import com.icure.codegen.ir.parameter.toIRTypeParameter
 import com.icure.codegen.ir.property.toIRProperty
@@ -87,12 +87,6 @@ fun KSDeclaration.extractDocString(): String? {
 	}
 	return null
 }
-
-val javaSuperTypes = listOf("Any", "Serializable", "Cloneable", "Comparable", "PrincipalDto")
-
-fun <T : IREntity> Sequence<T>.ignoreJavaSupertypes(): Sequence<T> = filterNot { javaSuperTypes.contains(it.simpleName) }
-
-fun <T : IREntity> List<T>.ignoreJavaSupertypes() = asSequence().ignoreJavaSupertypes()
 
 fun KSDeclaration.toIRDeclaration(): IRDeclaration = when {
 	this is KSClassDeclaration && this.classKind == ClassKind.CLASS-> this.toIRClass()
@@ -232,7 +226,7 @@ fun KSClassDeclaration.propertiesToIRProperties(): List<IRProperty> {
 
 		irProperty.copy(
 			defaultValue = constructorParam?.defaultValue ?: irProperty.defaultValue,
-			constructor = constructorParam != null,
+			isConstructor = constructorParam != null,
 			annotations = irProperty.annotations + (constructorParam?.annotations ?: emptyList())
 		)
 	}.toList()

@@ -9,20 +9,16 @@ import com.google.devtools.ksp.symbol.KSTypeReference
 import com.google.devtools.ksp.symbol.Variance
 import com.icure.codegen.ir.IRDecryptedEntityReference
 import com.icure.codegen.ir.IREncryptedEntityReference
-import com.icure.codegen.ir.IREntity
 import com.icure.codegen.ir.IREntityReference
 import com.icure.codegen.ir.IRFunctionTypeReference
 import com.icure.codegen.ir.IRGenericReference
 import com.icure.codegen.ir.IRPlainEntityReference
 import com.icure.codegen.ir.IRStar
-import com.icure.codegen.ir.annotation.IRAnnotated
 import com.icure.codegen.ir.annotation.toIRAnnotations
 import com.icure.codegen.ir.declaration.IRTypeParameter
 import com.icure.codegen.ir.declaration.isEncryptableOrSomethingSecure
 import com.icure.codegen.ir.declaration.toIRTypeReference
 import com.icure.codegen.ir.parameter.toIRTypeParameter
-import com.icure.codegen.utils.KRAKEN_DTO_BASE_PATH
-import com.icure.codegen.utils.toSdkDtoPackage
 
 fun getParentDeclarations(declaration: KSDeclaration): List<String> {
 	val parent = declaration.parentDeclaration?.takeIf { parent ->
@@ -95,27 +91,6 @@ fun KSTypeReference?.toIRTypeReference(): IREntityReference = this?.resolve()?.l
 	isEncryptable = false,
 	annotations = emptyList(),
 )
-
-fun <T : IREntity> T.mapToModelType(): IREntityReference = when {
-	packageName?.startsWith(KRAKEN_DTO_BASE_PATH) == true -> IRPlainEntityReference(
-		packageName = packageName?.toSdkDtoPackage(),
-		simpleName =  simpleName.replace("Dto", ""),
-		parentDeclarations = parentDeclarations,
-		isNullable = false,
-		isEncryptable = false,
-		superTypes = emptyList(),
-		annotations = (this as? IRAnnotated)?.annotations.orEmpty(),
-	)
-	else -> IRPlainEntityReference(
-		packageName = packageName,
-		simpleName =  simpleName,
-		parentDeclarations = parentDeclarations,
-		isNullable = false,
-		isEncryptable = false,
-		superTypes = emptyList(),
-		annotations = (this as? IRAnnotated)?.annotations.orEmpty(),
-	)
-}
 
 fun KSTypeAlias.toIRTypeReference() = IRPlainEntityReference(
 	packageName = packageName.asString(),

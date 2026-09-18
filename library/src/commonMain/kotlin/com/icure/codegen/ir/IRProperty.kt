@@ -2,6 +2,7 @@ package com.icure.codegen.ir
 
 import com.icure.codegen.models.EncryptableFlavour
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.json.JsonNames
 
 @Serializable
 data class IRProperty(
@@ -13,7 +14,9 @@ data class IRProperty(
     val getter: IRFunction?,
     val setter: IRFunction?,
     val defaultValue: IRCodeBlock?,
-    val constructor: Boolean,
+    // renamed from `constructor` due to problems on js
+    @JsonNames("constructor")
+    val isConstructor: Boolean,
     override val docString: String?
 ) : IRDeclaration {
     override val parentDeclarations: List<String> = emptyList()

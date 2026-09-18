@@ -1,5 +1,7 @@
 package com.icure.codegen.functions
 
+import kotlin.jvm.JvmInline
+
 @JvmInline
 value class PascalCaseString(override val value: String): Casing {
     companion object {
