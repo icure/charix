@@ -16,4 +16,11 @@ const val KRYPTOM_PACKAGE = "com.icure.kryptom"
 // region Encryptable Constants
 val ENCRYPTABLE_SIMPLE_NAMES = listOf("Encryptable", "Encrypted")
 val ENCRYPTABLE_DTO_SIMPLE_NAMES = ENCRYPTABLE_SIMPLE_NAMES.map { "${it}Dto" }
+
+/**
+ * Entities that do not implement Encryptable but should still be treated as such (encrypted/decrypted flavours).
+ */
+val ALWAYS_ENCRYPTABLE_SIMPLE_NAMES = listOf("Content", "CustomEntityBase").let { names ->
+	names + names.map { "${it}Dto" }
+}
 // endregion

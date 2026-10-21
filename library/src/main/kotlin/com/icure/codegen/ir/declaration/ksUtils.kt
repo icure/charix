@@ -29,6 +29,7 @@ import com.icure.codegen.ir.fromModifier
 import com.icure.codegen.ir.parameter.toIRParameter
 import com.icure.codegen.ir.parameter.toIRTypeParameter
 import com.icure.codegen.ir.property.toIRProperty
+import com.icure.codegen.utils.ALWAYS_ENCRYPTABLE_SIMPLE_NAMES
 import com.icure.codegen.utils.ENCRYPTABLE_DTO_SIMPLE_NAMES
 import com.icure.codegen.utils.ENCRYPTABLE_SIMPLE_NAMES
 
@@ -233,7 +234,7 @@ fun KSClassDeclaration.propertiesToIRProperties(): List<IRProperty> {
 }
 
 fun KSClassDeclaration.isEncryptableOrSomethingSecure(): Boolean =
-	simpleName.asString() == "ContentDto" || simpleName.asString() == "Content" || superTypes.any {
+	ALWAYS_ENCRYPTABLE_SIMPLE_NAMES.contains(simpleName.asString()) || superTypes.any {
 	(ENCRYPTABLE_DTO_SIMPLE_NAMES + ENCRYPTABLE_SIMPLE_NAMES).contains(it.resolve().declaration.simpleName.asString())
 } || superTypes.any { (it.resolve().declaration as? KSClassDeclaration)?.isEncryptableOrSomethingSecure() ?: false }
 
