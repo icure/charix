@@ -183,7 +183,13 @@ fun KSClassDeclaration.toIREnum(): IREnum = IREnum(
 	modifiers = modifiers.map { IRModifier.fromModifier(it) }.toSet(),
 	properties = primaryConstructor?.parameters?.map { it.toIRProperty() } ?: emptyList(),
 	declarations = declarations.map { it.toIRDeclaration() }.toList(),
-	docString = extractDocString()
+	docString = extractDocString(),
+	superTypes = superTypes.mapNotNull {
+		val resolved = it.resolve().declaration
+		if (resolved is KSClassDeclaration && resolved.qualifiedName?.asString() != "kotlin.Enum") {
+			resolved.toIRTypeReference(false, it.element)
+		} else null
+	}.toList(),
 )
 
 fun KSClassDeclaration.toIREnumEntry(): IREnumEntry = IREnumEntry(

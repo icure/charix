@@ -112,11 +112,15 @@ data class IREnum(
 	override val modifiers: Set<IRModifier>,
 	override val properties: List<IRProperty>,
 	override val declarations: List<IRDeclaration>,
-	override val docString: String?
+	override val docString: String?,
+	/**
+	 * The interfaces implemented by the enum, if any (e.g. an enum implementing a sealed interface). Doesn't include
+	 * `kotlin.Enum`.
+	 */
+	override val superTypes: List<IREntityReference> = emptyList(),
 ) : IRClassDeclaration {
 	override val isEncryptable = false
 	override val typeParameters: List<IRTypeParameter> = emptyList()
-	override val superTypes: List<IREntityReference> = emptyList()
 }
 
 
